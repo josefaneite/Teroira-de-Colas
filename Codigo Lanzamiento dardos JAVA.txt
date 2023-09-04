@@ -1,0 +1,344 @@
+package laDiana;
+//Autor: Jose Faneite
+import java.text.DecimalFormat;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+public class Diana extends Application {
+
+    private int puntuacionJugador1 = 0;
+    private int puntuacionJugador2 = 0;
+    private boolean turnoJugador1 = true; // El jugador 1 comienza
+    private int lanzamientosEnCentro = 0;
+    private int lanzamientosFueraCentro = 0;
+    private int puntajeMaximo = 50; // Valor predeterminado
+    
+    // Etiquetas para mostrar los mensajes y puntuaciones
+    Label mensajeLabel = new Label(""); // Para mostrar mensajes como "¡Jugador 1 gana!"
+    Label puntuacionJugador1Label = new Label("Puntuación Jugador 1: 0");
+    Label puntuacionJugador2Label = new Label("Puntuación Jugador 2: 0");
+    Label probabilidadCentroLabel = new Label("Probabilidad de dar en el centro: 0%");
+    Label probabilidadFueraCentroLabel = new Label("Probabilidad de dar fuera del centro: 0%");
+    TextField puntajeMaximoField = new TextField("50"); // Campo de texto para el puntaje máximo
+    Button configurarPuntajeMaximoButton = new Button("Configurar Puntaje Máximo");
+    Button reiniciarJuegoButton = new Button("Reiniciar Juego"); // Botón para reiniciar 
+    Label turnoLabel = new Label("Turno: Jugador 1"); // Etiqueta para mostrar el turno
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+
+    public void start(Stage primaryStage) throws Exception {
+        Pane lienzo = new Pane();
+        Label coordenadas = new Label();
+        coordenadas.setLayoutX(0);
+        coordenadas.setLayoutY(0);
+        coordenadas.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                String coord = "x: " + event.getX() + " y: " + event.getY();
+                coordenadas.setText(coord);
+            }
+        });
+
+        Label click = new Label();
+        click.setLayoutX(60);
+        click.setLayoutY(60);
+        click.setTextFill(Color.BLUE);
+        click.setFont(Font.font("", FontWeight.BOLD, 20));
+        Label pos = new Label();
+        pos.setLayoutX(60);
+        pos.setLayoutY(100);
+        pos.setTextFill(Color.GREY);
+        
+        ///// Ubicaciones de las etiquetas en la ventana ////////////////
+        mensajeLabel.setLayoutX(60);
+        mensajeLabel.setLayoutY(10);
+        mensajeLabel.setTextFill(Color.BLUE);
+        mensajeLabel.setFont(Font.font("", FontWeight.BOLD, 20));
+        puntuacionJugador1Label.setLayoutX(650);
+        puntuacionJugador1Label.setLayoutY(10);
+        puntuacionJugador2Label.setLayoutX(650);
+        puntuacionJugador2Label.setLayoutY(30);
+        probabilidadCentroLabel.setLayoutX(650);
+        probabilidadCentroLabel.setLayoutY(50);
+        probabilidadFueraCentroLabel.setLayoutX(650);
+        probabilidadFueraCentroLabel.setLayoutY(70);
+        puntajeMaximoField.setLayoutX(650);
+        puntajeMaximoField.setLayoutY(90);
+        configurarPuntajeMaximoButton.setLayoutX(650);
+        configurarPuntajeMaximoButton.setLayoutY(120);
+        reiniciarJuegoButton.setLayoutX(680);
+        reiniciarJuegoButton.setLayoutY(150);
+        turnoLabel.setLayoutX(60);
+        turnoLabel.setLayoutY(120);
+        turnoLabel.setTextFill(Color.BLUE);
+        turnoLabel.setFont(Font.font("", FontWeight.BOLD, 20));
+        
+        Circle[] circulos = new Circle[12];
+        Text[] puntajesDer = new Text[12];
+        Text[] puntajesIzq = new Text[12];
+        Text[] puntajesSup = new Text[12];
+        Text[] puntajesInf = new Text[12];
+        int radio = 300;
+        int posicion = 643;
+        int posicion2 = 65;
+        int posicion3 = 733;
+        int posicion4 = 160;
+        
+        for (int i = 0; i < 12; i++) {
+            Circle circulo = new Circle();
+            circulo.setRadius(radio);
+            circulo.setCenterX(450);
+            circulo.setCenterY(350);
+            Text texto = new Text(Integer.toString(i));
+            texto.setX(448);
+            texto.setY(posicion);
+            texto.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 16));
+
+            Text texto2 = new Text(Integer.toString(i));
+            texto2.setX(448);
+            texto2.setY(posicion2);
+            texto2.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 16));
+
+            Text texto3 = new Text(Integer.toString(i));
+            texto3.setX(posicion3);
+            texto3.setY(355);
+            texto3.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 16));
+
+            Text texto4 = new Text(Integer.toString(i));
+            texto4.setX(posicion4);
+            texto4.setY(355);
+            texto4.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 16));
+
+            lienzo.setOnMouseMoved(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent e) {
+                    String f = "X: " + " " + e.getX() + " | " + "Y: " + e.getY() + "";
+                    pos.setText(f);
+                }
+            });
+            
+            ///// Configurar el puntaje máximo cuando se presiona el botón /////////
+            configurarPuntajeMaximoButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    try {
+                        puntajeMaximo = Integer.parseInt(puntajeMaximoField.getText());
+                        mensajeLabel.setText("Puntaje máximo configurado a " + puntajeMaximo);
+                    } catch (NumberFormatException e) {
+                        mensajeLabel.setText("Ingrese un valor numérico válido para el puntaje máximo.");
+                    }
+                }
+            });
+            
+            ///// Reiniciar el juego cuando se presiona el botón correspondiente /////////////
+            reiniciarJuegoButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    reiniciarJuego();
+                }
+            });
+
+            circulo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if (puntuacionJugador1 >= puntajeMaximo || puntuacionJugador2 >= puntajeMaximo) {
+                        mensajeLabel.setText("El juego ya ha terminado");
+                        click.setText("");
+                        return;
+                    }
+                    double rad = circulo.getRadius();
+                    int puntos = 0;
+                    
+                    if (rad == 270) {
+                        click.setText("1 PUNTO ");
+                        puntos = 1;
+                    }
+                    if (rad == 240) {
+                        click.setText("2 PUNTOS ");
+                        puntos = 2;
+                    }
+                    if (rad == 210) {
+                        click.setText("3 PUNTOS ");
+                        puntos = 3;
+                    }
+                    if (rad == 180) {
+                        click.setText("4 PUNTOS ");
+                        puntos = 4;
+                    }
+                    if (rad == 150) {
+                        click.setText("5 PUNTOS ");
+                        puntos = 5;
+                    }
+                    if (rad == 120) {
+                        click.setText("6 PUNTOS ");
+                        puntos = 6;
+                    }
+                    if (rad == 90) {
+                        click.setText("7 PUNTOS ");
+                        puntos = 7;
+                    }
+                    if (rad == 60) {
+                        click.setText("8 PUNTOS ");
+                        puntos = 8;
+                    }
+                    if (rad == 30) {
+                        click.setText("9 PUNTOS ");
+                        puntos = 9;
+                    }
+                    if (rad < 30) {
+                        click.setText("10 PUNTOS ");
+                        puntos = 10;
+                        
+                        lanzamientosEnCentro++;    
+                    } else {
+                        lanzamientosFueraCentro++;
+                    }
+
+                    if (turnoJugador1) {
+                        puntuacionJugador1 += puntos;
+                    } else {
+                        puntuacionJugador2 += puntos;
+                    }
+                    
+                    puntuacionJugador1Label.setText("Puntuación Jugador 1: " + puntuacionJugador1);
+                    puntuacionJugador2Label.setText("Puntuación Jugador 2: " + puntuacionJugador2);
+
+                    //// Actualizar la etiqueta de turno //////////////
+                    if (puntuacionJugador1 >= puntajeMaximo || puntuacionJugador2 >= puntajeMaximo) {
+                        turnoLabel.setText("Turnos Finalizados");
+                    } else if (turnoJugador1) {
+                        turnoLabel.setText("Turno: Jugador 2");
+                    } else {
+                        turnoLabel.setText("Turno: Jugador 1");
+                    }
+
+                    if (puntuacionJugador1 >= puntajeMaximo) {
+                        mensajeLabel.setText("¡Jugador 1 gana! con " + puntuacionJugador1 + " puntos");
+                    } else if (puntuacionJugador2 >= puntajeMaximo) {
+                        mensajeLabel.setText("¡Jugador 2 gana! con " + puntuacionJugador2 + " puntos");
+                    }
+
+                    ///// Calcular probabilidades ///////////////////////
+                    double probabilidadCentro = (double) lanzamientosEnCentro / (lanzamientosEnCentro + lanzamientosFueraCentro);
+                    double probabilidadFueraCentro = (double) lanzamientosFueraCentro / (lanzamientosEnCentro + lanzamientosFueraCentro);
+   
+                    //// Formatear las probabilidades con un máximo de 2 decimales ////////////
+                    DecimalFormat df = new DecimalFormat("0.00%");
+                    String probabilidadCentroFormateada = df.format(probabilidadCentro);
+                    String probabilidadFueraCentroFormateada = df.format(probabilidadFueraCentro);
+                    
+                    probabilidadCentroLabel.setText("Probabilidad de dar en el centro: " + probabilidadCentroFormateada);
+                    probabilidadFueraCentroLabel.setText("Probabilidad de dar fuera del centro: " + probabilidadFueraCentroFormateada);
+
+                    //// Cambiar el turno /////////////////////////
+                    turnoJugador1 = !turnoJugador1;
+                }
+            });
+
+            if (i == 11) {
+                circulo.setFill(Color.RED);
+                texto.setFill(null);
+                texto2.setFill(null);
+                texto3.setFill(null);
+                texto4.setFill(null);
+            } else if (i % 2 == 0) {
+                if (i == 10) {
+                    circulo.setFill(Color.WHITE);
+                    texto.setFill(null);
+                    texto2.setFill(null);
+                    texto3.setFill(null);
+                    texto4.setFill(null);
+                } else if (i == 0) {
+                    circulo.setFill(null);
+                    texto.setFill(null);
+                    texto2.setFill(null);
+                    texto3.setFill(null);
+                    texto4.setFill(null);
+                } else {
+                    circulo.setFill(Color.WHITE);
+                    texto.setFill(Color.BLACK);
+                    texto2.setFill(Color.BLACK);
+                    texto3.setFill(Color.BLACK);
+                    texto4.setFill(Color.BLACK);
+                }
+            } else {
+                circulo.setFill(Color.BLACK);
+                texto.setFill(Color.WHITE);
+                texto2.setFill(Color.WHITE);
+                texto3.setFill(Color.WHITE);
+                texto4.setFill(Color.WHITE);
+            }
+
+            posicion = posicion - 30;
+            posicion2 = posicion2 + 30;
+            posicion3 = posicion3 - 30;
+            posicion4 = posicion4 + 30;
+            puntajesSup[i] = texto2;
+            puntajesInf[i] = texto;
+            puntajesDer[i] = texto3;
+            puntajesIzq[i] = texto4;
+            circulos[i] = circulo;
+            if (radio == 30) {
+                radio = radio - 20;
+            } else if (radio < 30) {
+                radio = radio - 7;
+            } else {
+                radio = radio - 30;
+            }
+        }
+
+        lienzo.getChildren().addAll(circulos);
+        lienzo.getChildren().addAll(puntajesInf);
+        lienzo.getChildren().addAll(puntajesSup);
+        lienzo.getChildren().addAll(puntajesIzq);
+        lienzo.getChildren().addAll(puntajesDer);
+        lienzo.getChildren().addAll(mensajeLabel);
+        lienzo.getChildren().addAll(puntuacionJugador1Label);
+        lienzo.getChildren().addAll(puntuacionJugador2Label);
+        lienzo.getChildren().addAll(probabilidadCentroLabel);
+        lienzo.getChildren().addAll(probabilidadFueraCentroLabel);
+        lienzo.getChildren().addAll(puntajeMaximoField);
+        lienzo.getChildren().addAll(configurarPuntajeMaximoButton);
+        lienzo.getChildren().addAll(reiniciarJuegoButton);
+        lienzo.getChildren().addAll(turnoLabel);
+        lienzo.getChildren().add(click);
+        lienzo.getChildren().add(pos);
+
+        Scene escena = new Scene(lienzo, 900, 700);
+        escena.setFill(Color.WHITE);
+        primaryStage.setTitle("Simulación estocástica, Lanzamiento de dardos");
+        primaryStage.setScene(escena);
+        primaryStage.show();
+    }
+    
+    //// Método para reiniciar el estado del juego /////
+    private void reiniciarJuego() {
+        puntuacionJugador1 = 0;
+        puntuacionJugador2 = 0;
+        turnoJugador1 = true;
+        lanzamientosEnCentro = 0;
+        lanzamientosFueraCentro = 0;
+        puntajeMaximo = Integer.parseInt(puntajeMaximoField.getText()); // Obtener el puntaje máximo actualizado
+        mensajeLabel.setText(""); // Limpiar el mensaje
+        puntuacionJugador1Label.setText("Puntuación Jugador 1: 0");
+        puntuacionJugador2Label.setText("Puntuación Jugador 2: 0");
+        probabilidadCentroLabel.setText("Probabilidad de dar en el centro: 0%");
+        probabilidadFueraCentroLabel.setText("Probabilidad de dar fuera del centro: 0%");
+        turnoLabel.setText("Turno: Jugador 1"); // Restablecer el turno
+    }
+}
