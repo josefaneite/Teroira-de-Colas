@@ -46,3 +46,13 @@ El Codigo realiza una simulación simplificada de la planificación de procesos 
 14. El método `main()` inicia la aplicación Swing creando una instancia de la clase `Procesar`.
 
 
+
+
+
+
+
+ Lanzamiento de dardos 
+
+
+ programación entera 
+
