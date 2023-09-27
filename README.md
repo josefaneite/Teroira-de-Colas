@@ -1,4 +1,4 @@
-# Teoira-de-Colas
+# Teoira-de-Colas Sistema de invertario, lanzamiento de dardos y programación Entera 
  Colas de Prioridad
 Universidad Jose Antonio Páez
 Métodos Cuantitativos
